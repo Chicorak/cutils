@@ -1,6 +1,6 @@
 # cutils
 
-Simple, lightweight, FOSS utility libraries for C.
+Simple, lightweight, easy to use utility libraries for C.
 
 ## Installation
 
@@ -8,8 +8,7 @@ Clone the repository.
 
 ## Usage
 
-Include any header file you want to use. Make sure to compile it's corresponding C file as well for the
-implementation.
+Include any header file you want to use. Make sure to compile any corresponding C files.
 
 ## Contributing
 
@@ -27,4 +26,4 @@ Thanks to everyone in the Cleanware organization, and everyone who contributed.
 
 ## License
 
-[MIT](https://github.com/Cleanware/cutils/blob/main/LICENSE)
+[zlib](https://github.com/Cleanware/cutils/blob/main/LICENSE)
