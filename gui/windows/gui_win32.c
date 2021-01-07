@@ -20,7 +20,13 @@
 */
 
 #include "gui.h"
+#include <stdlib.h>
 #include <windows.h>
+
+struct window
+{
+    HWND hwnd;
+};
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
 {
@@ -61,12 +67,17 @@ window_t open_window(char *title)
 
     ShowWindow(hwnd, SW_SHOW);
 
-    return (window_t)hwnd;
+    struct window *wnd = (struct window *)malloc(sizeof(struct window));
+
+    wnd->hwnd = hwnd;
+
+    return (window_t)wnd;
 }
 
 void close_window(window_t window)
 {
     DestroyWindow((HWND)window);
+    free(window);
 }
 
 void read_window(window_t window, struct window_attr *attr)
