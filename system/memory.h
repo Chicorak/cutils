@@ -22,7 +22,7 @@
 #ifndef MEMORY_H
 #define MEMORY_H
 
-#ifndef HEA_SIZE
+#ifndef HEAP_SIZE
 	#define HEAP_SIZE (1024 * 1024) /* 1 MB */
 #endif
 
@@ -36,22 +36,22 @@ struct block
     struct block *next;
 };
 
-void *malloc(int size);
-void *realloc(void *ptr, int size);
-void free(void *ptr);
-int memsize(void *ptr);
-void memcpy(void *dest, void *src, int size);
-int onheap(void *ptr);
-int memuse(void);
-int talloc(void);
-void split(struct block *, int);
-void merge(void);
+static void *malloc(int size);
+static void *realloc(void *ptr, int size);
+static void free(void *ptr);
+static int memsize(void *ptr);
+static void memcpy(void *dest, void *src, int size);
+static int onheap(void *ptr);
+static int memuse(void);
+static int talloc(void);
+static void split(struct block *, int);
+static void merge(void);
 
-unsigned char HEAP[HEAP_SIZE];
-Block *FREE_BLOCKS = (void *)HEAP;
-int TOTAL_ALLOCATIONS = 0;
+static unsigned char HEAP[HEAP_SIZE];
+static struct block *FREE_BLOCKS = (void *)HEAP;
+static int TOTAL_ALLOCATIONS = 0;
 
-void split(struct block *block, int size)
+static void split(struct block *block, int size)
 {
     struct block *new_block = (struct block *)(block + size + sizeof(struct block));
 
@@ -64,7 +64,7 @@ void split(struct block *block, int size)
     block->next = new_block;
 }
 
-void merge(void)
+static void merge(void)
 {
     if (FREE_BLOCKS->size == 0) return;
 
@@ -84,7 +84,7 @@ void merge(void)
     }
 }
 
-void *malloc(int size)
+static void *malloc(int size)
 {
     struct block *current = FREE_BLOCKS;
 
@@ -123,7 +123,7 @@ void *malloc(int size)
     return NULL;
 }
 
-void *realloc(void *ptr, int size)
+static void *realloc(void *ptr, int size)
 {
     if(onheap(ptr))
     {
@@ -143,7 +143,7 @@ void *realloc(void *ptr, int size)
         return NULL;
 }
 
-void free(void *ptr)
+static void free(void *ptr)
 {
     if(onheap(ptr))
     {
@@ -156,7 +156,7 @@ void free(void *ptr)
     }
 }
 
-int memsize(void *ptr)
+static int memsize(void *ptr)
 {
     if(onheap(ptr))
     {
@@ -168,7 +168,7 @@ int memsize(void *ptr)
         return -1;
 }
 
-void memcpy(void *dest, void *src, int size)
+static void memcpy(void *dest, void *src, int size)
 {
     char *b_dest = (char *)dest;
     char *b_src = (char *)src;
@@ -178,12 +178,12 @@ void memcpy(void *dest, void *src, int size)
         b_dest[i] = b_src[i];
 }
 
-int onheap(void *ptr)
+static int onheap(void *ptr)
 {
     return ((void *)HEAP) <= ptr && ptr <= (((void *)HEAP) + HEAP_SIZE);
 }
 
-int memuse(void)
+static int memuse(void)
 {
     if(FREE_BLOCKS->size == 0)
         return 0;
@@ -202,7 +202,7 @@ int memuse(void)
     return result;
 }
 
-int talloc(void)
+static int talloc(void)
 {
     return TOTAL_ALLOCATIONS;
 }
