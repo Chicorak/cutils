@@ -38,33 +38,7 @@ enum json_value_type
 
 /**
  * Represents a json value, which can be any
- * json type and have any type of value(s).
- *
- * In JSON (for string):
- *
- * "some_json_key":"some_json_value"
- *      ^^^              ^^^
- *      key             value
- *
- * In JSON (for object/array):
- *
- * "some_json_key": {
- *      ^^^
- *      key
- *
- *   "some_json_key": "value",      <|\
- *   "another_json_key: "value",    <| | Values
- *   "some_other_json_key: "value"  <|/
- * }
- *
- * type - holds the value type (from the enum above)
- * value_count - if the value is of type object or array, this holds
- *               the amount of child/subvalues the object or array has
- * key - holds the string for the key of the json_value
- * string_value - if the value of the json_value is a string, the string
- *                value will be here
- * values - the list of children/sub values the json value has if the
- *          json value is a object or array
+ * json type and store any type of value(s).
  */
 struct json_value
 {
@@ -76,11 +50,6 @@ struct json_value
 /**
  * Takes in a json string, and converts it into
  * a json tree.
- *
- * json - raw json string
- * returns - a struct json_value of type object
- *           with 'values' containing all json
- *           base objects
  */
 static struct json_value *json_parse(char *json);
 
