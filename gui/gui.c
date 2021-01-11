@@ -83,29 +83,32 @@ window_t open_window(char *title)
         NULL
     );
 
+    if(hwnd == NULL) return NULL;
+
     ShowWindow(hwnd, SW_SHOW);
 
     return (window_t)hwnd;
 }
 
-void close_window(window_t window)
+int close_window(window_t window)
 {
-    DestroyWindow((HWND)window);
-    free(window);
+    return DestroyWindow((HWND)window);
 }
 
-void read_window(window_t window, struct window_attr *attr)
+int read_window(window_t window, struct window_attr *attr)
 {
-    GetWindowText((HWND)window, attr->title, 64);
+    int result = 0;
 
-    RECT window_rect;
+    if(!GetWindowText((HWND)window, attr->title, 64)) result++;
 
-    if(GetWindowRect((HWND)window, &window_rect))
+    RECT rect;
+
+    if(GetWindowRect((HWND)window, &rect))
     {
-        attr->x = window_rect.left;
-        attr->y = window_rect.right;
-        attr->width = window_rect.right - window_rect.left;
-        attr->height = window_rect.bottom - window_rect.top;
+        attr->x = rect.left;
+        attr->y = rect.right;
+        attr->width = rect.right - rect.left;
+        attr->height = rect.bottom - rect.top;
     }
     else
     {
@@ -113,22 +116,21 @@ void read_window(window_t window, struct window_attr *attr)
         attr->y = -1;
         attr->width = -1;
         attr->height = -1;
+
+        result += 2;
     }
+
+    return result;
 }
 
-void write_window(window_t window, struct window_attr *attr)
+int write_window(window_t window, struct window_attr *attr)
 {
-    SetWindowText((HWND)window, attr->title);
+    int result = 0;
 
-    SetWindowPos(
-        (HWND)window,
-        HWND_TOP,
-        attr->x,
-        attr->y,
-        attr->width,
-        attr->height,
-        0
-    );
+    if(!SetWindowText((HWND)window, attr->title)) result++;
+    if(!MoveWindow((HWND)window, attr->x, attr->y, attr->width, attr->height, 0)) result += 2;
+
+    return result;
 }
 
 int poll_event(struct window_event *event)
@@ -137,6 +139,9 @@ int poll_event(struct window_event *event)
 
     if(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
     {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+
         event->window = (window_t)msg.hwnd;
 
         switch(msg.message)
@@ -253,12 +258,69 @@ int poll_event(struct window_event *event)
             }
         }
 
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
-
         return 1;
     }
     else return 0;
+}
+
+graphics_t create_graphics(window_t window)
+{
+    return (graphics_t)NULL;
+}
+
+int destroy_graphics(window_t window, graphics_t graphics)
+{
+    return 1;
+}
+
+int clear_window(window_t window, graphics_t graphics)
+{
+    RECT rect;
+
+    if(GetWindowRect((HWND)window, &rect))
+    {
+        return RedrawWindow((HWND)window, &rect, NULL, RDW_ERASE);
+    }
+    else return 0;
+}
+
+int draw_pixel(window_t window, graphics_t graphics, int x, int y, struct color *color)
+{
+    HDC hdc = GetDC((HWND)window);
+
+    int result = SetPixel(hdc, x, y, RGB(color->r, color->g, color->b));
+
+    ReleaseDC((HWND)window, hdc);
+
+    return result;
+}
+
+int draw_rect(window_t window, graphics_t graphics, int x, int y, int width, int height, struct color *color)
+{
+    HDC hdc = GetDC((HWND)window);
+    HBRUSH hBrush = CreateSolidBrush(RGB(color->r, color->g, color->b));
+
+    RECT rect = { x, y, width, height };
+
+    int result = FrameRect(hdc, &rect, hBrush);
+
+    ReleaseDC((HWND)window, hdc);
+
+    return result;
+}
+
+int fill_rect(window_t window, graphics_t graphics, int x, int y, int width, int height, struct color *color)
+{
+    HDC hdc = GetDC((HWND)window);
+    HBRUSH hBrush = CreateSolidBrush(RGB(color->r, color->g, color->b));
+
+    RECT rect = { x, y, width, height };
+
+    int result = FillRect(hdc, &rect, hBrush);
+
+    ReleaseDC((HWND)window, hdc);
+
+    return result;
 }
 
 #endif

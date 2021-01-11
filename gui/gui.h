@@ -47,6 +47,7 @@ enum mouse_buttons
 };
 
 typedef void * window_t;
+typedef void * graphics_t;
 
 struct window_attr
 {
@@ -60,10 +61,21 @@ struct window_event
     int type, params[16]; // max 16 params per event, can be changed
 };
 
+struct color
+{
+    unsigned char r, g, b;
+};
+
 window_t open_window(char *title);
-void close_window(window_t window);
-void read_window(window_t window, struct window_attr *attr);
-void write_window(window_t window, struct window_attr *attr);
+int close_window(window_t window);
+int read_window(window_t window, struct window_attr *attr);
+int write_window(window_t window, struct window_attr *attr);
 int poll_event(struct window_event *event);
+graphics_t create_graphics(window_t window);
+int destroy_graphics(window_t window, graphics_t graphics);
+int clear_window(window_t window, graphics_t graphics);
+int draw_pixel(window_t window, graphics_t graphics, int x, int y, struct color *color);
+int draw_rect(window_t window, graphics_t graphics, int x, int y, int width, int height, struct color *color);
+int fill_rect(window_t window, graphics_t graphics, int x, int y, int width, int height, struct color *color);
 
 #endif
