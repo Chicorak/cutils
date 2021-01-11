@@ -290,7 +290,7 @@ int draw_pixel(window_t window, graphics_t graphics, int x, int y, struct color 
 
     int result = SetPixel(hdc, x, y, RGB(color->r, color->g, color->b));
 
-    ReleaseDC((HWND)window, hdc);
+    //ReleaseDC((HWND)window, hdc);
 
     return result;
 }
@@ -304,7 +304,7 @@ int draw_rect(window_t window, graphics_t graphics, int x, int y, int width, int
 
     int result = FrameRect(hdc, &rect, hBrush);
 
-    ReleaseDC((HWND)window, hdc);
+    //ReleaseDC((HWND)window, hdc);
 
     return result;
 }
@@ -318,7 +318,7 @@ int fill_rect(window_t window, graphics_t graphics, int x, int y, int width, int
 
     int result = FillRect(hdc, &rect, hBrush);
 
-    ReleaseDC((HWND)window, hdc);
+    //ReleaseDC((HWND)window, hdc);
 
     return result;
 }
