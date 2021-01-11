@@ -1,4 +1,4 @@
 gui.h:
 	description: a simple, lightweight, easy to use, cross platform gui library
-	author: undersquire
+	authors: undersquire, MousieDev
 	version: 1.0.0
