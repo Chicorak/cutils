@@ -23,19 +23,25 @@
 #include <stdlib.h>
 #include <windows.h>
 
-struct window
-{
-    HWND hwnd;
-};
-
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
 {
-    return 0; //return DefWindowProc(hwnd, umsg, wparam, lparam);
+    switch(umsg)
+    {
+        case WM_QUIT:
+        case WM_CLOSE:
+        case WM_DESTROY:
+        {
+            PostQuitMessage(0);
+            return 0;
+        }
+    }
+
+    return DefWindowProc(hwnd, umsg, wparam, lparam);
 }
 
 window_t open_window(char *title)
 {
-    WNDCLASSEX wc;
+    WNDCLASSEX wc = { };
     HINSTANCE hInstance = GetModuleHandle(NULL);
 
     ZeroMemory(&wc, sizeof(WNDCLASSEX));
@@ -67,11 +73,7 @@ window_t open_window(char *title)
 
     ShowWindow(hwnd, SW_SHOW);
 
-    struct window *wnd = (struct window *)malloc(sizeof(struct window));
-
-    wnd->hwnd = hwnd;
-
-    return (window_t)wnd;
+    return (window_t)hwnd;
 }
 
 void close_window(window_t window)
@@ -121,18 +123,13 @@ int poll_event(struct window_event *event)
 {
     MSG msg;
 
-    if(PeekMessage(&msg, NULL, 0, 0))
+    if(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
     {
         event->window = (window_t)msg.hwnd;
 
-        switch(msg->message)
+        switch(msg.message)
         {
-            case WM_CREATE:
-            {
-                event->type = CREATE_WINDOW_EVENT;
-
-                break;
-            }
+            case WM_QUIT:
             case WM_CLOSE:
             case WM_DESTROY:
             {
@@ -140,20 +137,114 @@ int poll_event(struct window_event *event)
 
                 break;
             }
-            case WM_MOVE:
+            case WM_KEYDOWN:
             {
-                event->type = MOVE_WINDOW_EVENT;
+                event->type = KEY_DOWN_EVENT;
 
-                event->params[0] = (int)(short) LOWORD(msg->lParam);
-                event->params[1] = (int)(short) HIWORD(msg->lParam);
+                event->params[0] = (int)msg.wParam;
 
                 break;
             }
-            case
+            case WM_CHAR:
+            {
+
+                break;
+            }
+            case WM_KEYUP:
+            {
+                event->type = KEY_UP_EVENT;
+
+                event->params[0] = (int)msg.wParam;
+
+                break;
+            }
+            case WM_MOUSEMOVE:
+            {
+                event->type = MOUSE_MOVE_EVENT;
+
+                event->params[0] = (int)(short) LOWORD(msg.lParam);
+                event->params[1] = (int)(short) HIWORD(msg.lParam);
+
+                break;
+            }
+            case WM_LBUTTONDOWN:
+            {
+                event->type = MOUSE_CLICK_EVENT;
+
+                event->params[0] = LEFT_MOUSE_BUTTON;
+
+                break;
+            }
+            case WM_LBUTTONUP:
+            {
+                event->type = MOUSE_CLICK_EVENT;
+
+                event->params[0] = LEFT_MOUSE_BUTTON;
+
+                break;
+            }
+            case WM_LBUTTONDBLCLK:
+            {
+                event->type = MOUSE_CLICK_EVENT;
+
+                event->params[0] = LEFT_MOUSE_BUTTON;
+
+                break;
+            }
+            case WM_RBUTTONDOWN:
+            {
+                event->type = MOUSE_CLICK_EVENT;
+
+                event->params[0] = RIGHT_MOUSE_BUTTON;
+
+                break;
+            }
+            case WM_RBUTTONUP:
+            {
+                event->type = MOUSE_CLICK_EVENT;
+
+                event->params[0] = RIGHT_MOUSE_BUTTON;
+
+                break;
+            }
+            case WM_RBUTTONDBLCLK:
+            {
+                event->type = MOUSE_CLICK_EVENT;
+
+                event->params[0] = RIGHT_MOUSE_BUTTON;
+
+                break;
+            }
+            case WM_MBUTTONDOWN:
+            {
+                event->type = MOUSE_CLICK_EVENT;
+
+                event->params[0] = MIDDLE_MOUSE_BUTTON;
+
+                break;
+            }
+            case WM_MBUTTONUP:
+            {
+                event->type = MOUSE_CLICK_EVENT;
+
+                event->params[0] = MIDDLE_MOUSE_BUTTON;
+
+                break;
+            }
+            case WM_MBUTTONDBLCLK:
+            {
+                event->type = MOUSE_CLICK_EVENT;
+
+                event->params[0] = MIDDLE_MOUSE_BUTTON;
+
+                break;
+            }
         }
+
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
 
         return 1;
     }
-    else
-        return 0;
+    else return 0;
 }

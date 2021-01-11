@@ -22,13 +22,29 @@
 #ifndef GUI_H
 #define GUI_H
 
-enum
+enum event_type
 {
-    OPEN_WINDOW_EVENT,
     CLOSE_WINDOW_EVENT,
-    MOVE_WINDOW_EVENT,
-    RESIZE_WINDOW_EVENT
+    KEY_DOWN_EVENT,
+    KEY_UP_EVENT,
+    MOUSE_CLICK_EVENT,
+    MOUSE_MOVE_EVENT
 };
+
+enum special_key_code
+{
+    KEY_UP = 256,
+    KEY_DOWN = 257,
+    KEY_LEFT = 258,
+    KEY_RIGHT = 259
+};
+
+enum mouse_buttons
+{
+    LEFT_MOUSE_BUTTON,
+    RIGHT_MOUSE_BUTTON,
+    MIDDLE_MOUSE_BUTTON
+}
 
 typedef void * window_t;
 
