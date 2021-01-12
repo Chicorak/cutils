@@ -75,7 +75,5 @@ graphics_t create_graphics(window_t window);
 int destroy_graphics(window_t window, graphics_t graphics);
 int clear_window(window_t window, graphics_t graphics);
 int draw_pixel(window_t window, graphics_t graphics, int x, int y, struct color *color);
-int draw_rect(window_t window, graphics_t graphics, int x, int y, int width, int height, struct color *color);
-int fill_rect(window_t window, graphics_t graphics, int x, int y, int width, int height, struct color *color);
 
 #endif

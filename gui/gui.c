@@ -123,14 +123,17 @@ int read_window(window_t window, struct window_attr *attr)
     return result;
 }
 
+/* TODO: Figure out why MoveWindow doesnt work */
 int write_window(window_t window, struct window_attr *attr)
 {
-    int result = 0;
+    return 1; /* temporarily return failure */
+
+    /*int result = 0;
 
     if(!SetWindowText((HWND)window, attr->title)) result++;
     if(!MoveWindow((HWND)window, attr->x, attr->y, attr->width, attr->height, 0)) result += 2;
 
-    return result;
+    return result;*/
 }
 
 int poll_event(struct window_event *event)
@@ -265,12 +268,12 @@ int poll_event(struct window_event *event)
 
 graphics_t create_graphics(window_t window)
 {
-    return (graphics_t)NULL;
+    return (graphics_t)GetDC((HWND)window);
 }
 
 int destroy_graphics(window_t window, graphics_t graphics)
 {
-    return 1;
+    return DeleteDC((HDC)graphics);
 }
 
 int clear_window(window_t window, graphics_t graphics)
@@ -286,41 +289,7 @@ int clear_window(window_t window, graphics_t graphics)
 
 int draw_pixel(window_t window, graphics_t graphics, int x, int y, struct color *color)
 {
-    HDC hdc = GetDC((HWND)window);
-
-    int result = SetPixel(hdc, x, y, RGB(color->r, color->g, color->b));
-
-    //ReleaseDC((HWND)window, hdc);
-
-    return result;
-}
-
-int draw_rect(window_t window, graphics_t graphics, int x, int y, int width, int height, struct color *color)
-{
-    HDC hdc = GetDC((HWND)window);
-    HBRUSH hBrush = CreateSolidBrush(RGB(color->r, color->g, color->b));
-
-    RECT rect = { x, y, width, height };
-
-    int result = FrameRect(hdc, &rect, hBrush);
-
-    //ReleaseDC((HWND)window, hdc);
-
-    return result;
-}
-
-int fill_rect(window_t window, graphics_t graphics, int x, int y, int width, int height, struct color *color)
-{
-    HDC hdc = GetDC((HWND)window);
-    HBRUSH hBrush = CreateSolidBrush(RGB(color->r, color->g, color->b));
-
-    RECT rect = { x, y, width, height };
-
-    int result = FillRect(hdc, &rect, hBrush);
-
-    //ReleaseDC((HWND)window, hdc);
-
-    return result;
+    return SetPixel((HDC)graphics, x, y, RGB(color->r, color->g, color->b));
 }
 
 #endif
