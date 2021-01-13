@@ -369,6 +369,11 @@ static void xml_generate(char **xml, int index, struct xml_value *value)
 
 }
 
+static char *xml_build(struct xml_value *tree)
+{
+    
+}
+
 static void xml_delete(struct xml_value *value)
 {
     if(value == NULL) return;
