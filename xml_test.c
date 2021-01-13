@@ -25,7 +25,7 @@ void print_xml(int index, struct xml_value *value)
 
 int main(void)
 {
-    char *xml = "<map version=\"1.4\" tiledversion=\"1.4.3\" orientation=\"orthogonal\" renderorder=\"right-down\" width=\"192\" height=\"192\" tilewidth=\"32\" tileheight=\"32\" infinite=\"0\" nextlayerid=\"8\" nextobjectid=\"37\"> <tileset firstgid=\"1\" name=\"Tileset\" tilewidth=\"32\" tileheight=\"32\" tilecount=\"768\" columns=\"32\"> <image source=\"../../../../../Downloads/generic_platformer_tiles.png\" width=\"1024\" height=\"768\"/> </tileset> <layer id=\"7\" name=\"Background\" width=\"192\" height=\"192\"> <data encoding=\"csv\"> ... </data> </layer> <objectgroup id=\"3\" name=\"Attributes\"> ... </objectgroup> </map>";
+    char *xml = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?> <map version=\"1.4\" tiledversion=\"1.4.3\" orientation=\"orthogonal\" renderorder=\"right-down\" width=\"192\" height=\"192\" tilewidth=\"32\" tileheight=\"32\" infinite=\"0\" nextlayerid=\"8\" nextobjectid=\"37\"> <tileset firstgid=\"1\" name=\"Tileset\" tilewidth=\"32\" tileheight=\"32\" tilecount=\"768\" columns=\"32\"> <image source=\"../../../../../Downloads/generic_platformer_tiles.png\" width=\"1024\" height=\"768\"/> </tileset> <layer id=\"7\" name=\"Background\" width=\"192\" height=\"192\"> <data encoding=\"csv\"> ... </data> </layer> <objectgroup id=\"3\" name=\"Attributes\"> ... </objectgroup> </map>";
 
     struct xml_value *tree = xml_parse(xml);
 
