@@ -29,13 +29,9 @@ int main(void)
 
     struct xml_value *tree = xml_parse(xml);
 
-    //print_xml(0, tree);
-
-    char *new_xml = xml_build(tree);
+    print_xml(0, tree);
 
     xml_delete(tree);
-
-    printf("%s\n", new_xml);
 
     return 0;
 }
