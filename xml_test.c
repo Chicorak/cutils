@@ -4,22 +4,22 @@
 void print_xml(int index, struct xml_value *value)
 {
     int i, j;
-    for(i = 0; i < index; i++) printf(" ");
+    for(i = 0; i < index; i++) printf("  ");
 
-    printf("<%s>:\n", value->tag);
+    printf("- %s : %d <>\n", value->tag, value->sub_value_count);
 
-    for(i = 0; i < value->tag_count; i++)
+    for(i = 0; i < value->attr_count; i++)
     {
-        for(j = 0; j < index * 2; j++) printf(" ");
-        printf("%s: \"%s\"\n", value->tags[i]->tag, value->tags[i]->value);
+        for(j = 0; j < index * 2; j++) printf("  ");
+        printf("- %s : %s\n", value->attributes[i]->name, value->attributes[i]->value);
     }
 
-    for(i = 0; i < index; i++) printf(" ");
+    for(i = 0; i < index * 2; i++) printf("  ");
     printf("Value: \"%s\"\n", value->value);
 
     for(i = 0; i < value->sub_value_count; i++)
     {
-        print_xml(index + 2, value->sub_values[i]);
+        print_xml(index + 1, value->sub_values[i]);
     }
 }
 
@@ -29,9 +29,13 @@ int main(void)
 
     struct xml_value *tree = xml_parse(xml);
 
-    print_xml(0, tree);
+    //print_xml(0, tree);
+
+    char *new_xml = xml_build(tree);
 
     xml_delete(tree);
+
+    printf("%s\n", new_xml);
 
     return 0;
 }

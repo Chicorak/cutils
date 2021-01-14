@@ -28,9 +28,9 @@
 /**
  * Represents the test="test" in <tag test="test"> ... </test>
 */
-struct xml_tag
+struct xml_attr
 {
-    char *tag, *value;
+    char *name, *value;
 };
 
 /**
@@ -40,8 +40,8 @@ struct xml_tag
 struct xml_value
 {
     char *tag, *value;
-    int tag_count;
-    struct xml_tag **tags;
+    int attr_count;
+    struct xml_attr **attributes;
     int sub_value_count;
     struct xml_value **sub_values;
 };
@@ -88,8 +88,8 @@ static struct xml_value *xml_parse(char *xml)
 
     container->tag = NULL;
     container->value = NULL;
-    container->tag_count = 0;
-    container->tags = NULL;
+    container->attr_count = 0;
+    container->attributes = NULL;
     container->sub_value_count = 0;
     container->sub_values = NULL;
 
@@ -141,8 +141,8 @@ static struct xml_value *xml_parse(char *xml)
                         value->tag = NULL;
                         value->value = NULL;
 
-                        value->tag_count = 0;
-                        value->tags = (struct xml_tag **)malloc(sizeof(struct xml_tag *));
+                        value->attr_count = 0;
+                        value->attributes = (struct xml_attr **)malloc(sizeof(struct xml_attr *));
 
                         value->sub_value_count = 0;
                         value->sub_values = (struct xml_value **)malloc(sizeof(struct xml_value));
@@ -273,14 +273,14 @@ static struct xml_value *xml_parse(char *xml)
                     {
                         if(storage_count > 1)
                         {
-                            struct xml_tag *tag = (struct xml_tag *)malloc(sizeof(struct xml_tag));
+                            struct xml_attr *attr = (struct xml_attr *)malloc(sizeof(struct xml_attr));
 
-                            tag->tag = strdup(storage);
+                            attr->name = strdup(storage);
 
-                            values[value_count - 1]->tags = (struct xml_tag **)realloc(values[value_count - 1]->tags, sizeof(struct xml_tag *) * (values[value_count - 1]->tag_count + 1));
-                            values[value_count - 1]->tag_count++;
+                            values[value_count - 1]->attributes = (struct xml_attr **)realloc(values[value_count - 1]->attributes, sizeof(struct xml_attr *) * (values[value_count - 1]->attr_count + 1));
+                            values[value_count - 1]->attr_count++;
 
-                            values[value_count - 1]->tags[values[value_count - 1]->tag_count - 1] = tag;
+                            values[value_count - 1]->attributes[values[value_count - 1]->attr_count - 1] = attr;
 
                             state = PARSING_VALUE;
                         }
@@ -327,7 +327,7 @@ static struct xml_value *xml_parse(char *xml)
 
                             if(storage_count > 1)
                             {
-                                values[value_count - 1]->tags[values[value_count - 1]->tag_count - 1]->value = strdup(storage);
+                                values[value_count - 1]->attributes[values[value_count - 1]->attr_count - 1]->value = strdup(storage);
 
                                 storage = (char *)realloc(storage, sizeof(char));
                                 storage_count = 1;
@@ -366,12 +366,65 @@ static struct xml_value *xml_parse(char *xml)
 
 static void xml_generate(char **xml, int index, struct xml_value *value)
 {
+    int i;
+    for(i = 0; i < index; i++) *xml = strcat(*xml, "  ");
 
+    *xml = strcat(*xml, "<");
+    *xml = strcat(*xml, value->tag);
+    *xml = strcat(*xml, " ");
+
+    struct xml_attr *attr;
+    
+    for(i = 0; i < value->attr_count; i++)
+    {
+        attr = value->attributes[i];
+
+        *xml = strcat(*xml, attr->name);
+        *xml = strcat(*xml, "=\"");
+        *xml = strcat(*xml, attr->value);
+        *xml = strcat(*xml, "\"");
+
+        if(i + 1 < value->attr_count)
+        {
+            *xml = strcat(*xml, " ");
+        }
+    }
+
+    if(strlen(value->value) == 0 && value->sub_value_count == 0)
+    {
+        *xml = strcat(*xml, " />");
+        return;
+    }
+
+    *xml = strcat(*xml, ">");
+
+    if(strlen(value->value) > 0)
+    {
+        *xml = strcat(*xml, value->value);
+    }
+
+    if(value->sub_value_count > 0)
+    {
+        for(i = 0; i < value->sub_value_count; i++)
+        {
+            *xml = strcat(*xml, "\n");
+            xml_generate(xml, index + 1, value->sub_values[i]);
+        }
+    }
+
+    *xml = strcat(*xml, "</");
+    *xml = strcat(*xml, value->tag);
+    *xml = strcat(*xml, ">");
 }
 
 static char *xml_build(struct xml_value *tree)
 {
-    
+    char *xml = (char *)malloc(sizeof(char));
+    xml[0] = 0;
+
+    xml_generate(&xml, 0, tree);
+
+    return xml;
 }
 
 static void xml_delete(struct xml_value *value)
@@ -382,20 +435,20 @@ static void xml_delete(struct xml_value *value)
     if(value->value != NULL) free(value->value);
 
     int i;
-    for(i = 0; i < value->tag_count; i++)
+    for(i = 0; i < value->attr_count; i++)
     {
-        struct xml_tag *tag = value->tags[i];
+        struct xml_attr *attr = value->attributes[i];
 
-        if(tag != NULL)
+        if(attr != NULL)
         {
-            if(tag->tag != NULL) free(tag->tag);
-            if(tag->value != NULL) free(tag->value);
+            if(attr->name != NULL) free(attr->name);
+            if(attr->value != NULL) free(attr->value);
 
-            free(tag);
+            free(attr);
         }
     }
 
-    free(value->tags);
+    free(value->attributes);
 
     for(i = 0; i < value->sub_value_count; i++)
     {
