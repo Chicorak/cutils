@@ -53,17 +53,6 @@ struct xml_value
 static struct xml_value *xml_parse(char *xml);
 
 /**
- * A self-branching function to generate a xml
- * string from a xml tree.
-*/
-static void xml_generate(char **xml, int index, struct xml_value *value);
-
-/**
- * A function that simplifies the use of xml_generate.
-*/
-static char *xml_build(struct xml_value *value);
-
-/**
  * A function to cleanup and free all memory used by
  * a xml tree.
 */
@@ -362,69 +351,6 @@ static struct xml_value *xml_parse(char *xml)
     free(storage);
 
     return container;
-}
-
-static void xml_generate(char **xml, int index, struct xml_value *value)
-{
-    int i;
-    for(i = 0; i < index; i++) *xml = strcat(*xml, "  ");
-
-    *xml = strcat(*xml, "<");
-    *xml = strcat(*xml, value->tag);
-    *xml = strcat(*xml, " ");
-
-    struct xml_attr *attr;
-    
-    for(i = 0; i < value->attr_count; i++)
-    {
-        attr = value->attributes[i];
-
-        *xml = strcat(*xml, attr->name);
-        *xml = strcat(*xml, "=\"");
-        *xml = strcat(*xml, attr->value);
-        *xml = strcat(*xml, "\"");
-
-        if(i + 1 < value->attr_count)
-        {
-            *xml = strcat(*xml, " ");
-        }
-    }
-
-    if(strlen(value->value) == 0 && value->sub_value_count == 0)
-    {
-        *xml = strcat(*xml, " />");
-        return;
-    }
-
-    *xml = strcat(*xml, ">");
-
-    if(strlen(value->value) > 0)
-    {
-        *xml = strcat(*xml, value->value);
-    }
-
-    if(value->sub_value_count > 0)
-    {
-        for(i = 0; i < value->sub_value_count; i++)
-        {
-            *xml = strcat(*xml, "\n");
-            xml_generate(xml, index + 1, value->sub_values[i]);
-        }
-    }
-
-    *xml = strcat(*xml, "</");
-    *xml = strcat(*xml, value->tag);
-    *xml = strcat(*xml, ">");
-}
-
-static char *xml_build(struct xml_value *tree)
-{
-    char *xml = (char *)malloc(sizeof(char));
-    xml[0] = 0;
-
-    xml_generate(&xml, 0, tree);
-
-    return xml;
 }
 
 static void xml_delete(struct xml_value *value)
