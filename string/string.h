@@ -26,13 +26,6 @@
 
 typedef char * string_t;
 
-struct dynstring
-{
-    string_t data;
-    int size;
-};
-typedef struct dynstring * dynstring_t;
-
 /**
  * Allocates a new string with the
  * specified value.
@@ -40,21 +33,10 @@ typedef struct dynstring * dynstring_t;
 static string_t string(string_t str);
 
 /**
- * Allocates a new dynamic string with the
- * specified value.
-*/
-static dynstring_t dynstring(string_t str);
-
-/**
- * Assigns the dynamic string a new value.
-*/
-static int dynstring_set(dynstring_t str, string_t value);
-
-/**
  * Resizes the allocation of the specified
- * dynamic string to the specified size.
+ * string to the specified size.
 */
-static int dynstring_resize(dynstring_t str, int size);
+static string_t string_resize(string_t str, int size);
 
 /**
  * Copies the contents of a string into another.
@@ -66,18 +48,18 @@ static int string_copy(string_t dest, string_t src, int size);
 */
 static int string_length(string_t str);
 
-/**
- * Modifies the first specified dynamic string
- * by appending the second specified string
- * to it.
-*/
-static int dynstring_append(dynstring_t dest, string_t src);
 
 /**
  * Returns a new string containing the two
  * specified strings concatenated.
 */
 static string_t string_concat(string_t str, string_t cat);
+
+/**
+ * Returns the first specified string with the
+ * second specified string appended to it.
+*/
+static string_t string_append(string_t dest, string_t src);
 
 /**
  * Returns a new string taken from the specified string.
@@ -115,11 +97,6 @@ static int string_compare(string_t a, string_t b);
 */
 static void string_free(string_t str);
 
-/**
- * Cleans up and free all memory used by a dynamic string.
-*/
-static void dynstring_free(dynstring_t str);
-
 /*----------------------------------------------------------------------------*/
 /*                          Function Implementations                          */
 /*----------------------------------------------------------------------------*/
@@ -138,85 +115,15 @@ static string_t string(string_t str)
     return new_str;
 }
 
-static dynstring_t dynstring(string_t str)
+static string_t string_resize(string_t str, int size)
 {
-    dynstring_t dynstr = (dynstring_t)malloc(sizeof(struct dynstring));
+    if(str == NULL || size <= 0) return NULL;
 
-    if(dynstr == NULL) return NULL;
+    str = (string_t)realloc(sizeof(char) * size);
 
-    if(str == NULL)
-    {
-        dynstr->data = NULL;
-        dynstr->size = 0;
+    if(str == NULL) return NULL;
 
-        return dynstr;
-    }
-
-    int len = string_length(str) + 1;
-    dynstr->data = (string_t)malloc(sizeof(char) * len);
-
-    if(dynstr->data == NULL)
-    {
-        dynstr->data = NULL;
-        dynstr->size = 0;
-
-        return dynstr;
-    }
-
-    dynstr->size = len;
-
-    string_copy(dynstr->data, str, len);
-
-    return dynstr;
-}
-
-static int dynstring_set(dynstring_t str, string_t data)
-{
-    if(str == NULL) return 0;
-
-    if(str->data != NULL) free(str->data);
-
-    str->data = NULL;
-    str->size = 0;
-
-    if(data != NULL)
-    {
-        int len = string_length(data) + 1;
-        str->data = (string_t)malloc(sizeof(char) * len);
-
-        if(str->data == NULL) return 0;
-
-        string_copy(str->data, data, len);
-    }
-
-    return 1;
-}
-
-static int dynstring_resize(dynstring_t str, int size)
-{
-    if(size <= 0)
-    {
-        if(str->data != NULL) free(str->data);
-
-        str->data = NULL;
-        str->size = 0;
-
-        return 0;
-    }
-
-    str->data = (string_t)realloc(sizeof(char) * size);
-
-    if(str->data == NULL)
-    {
-        str->data = NULL;
-        str->size = 0;
-
-        return 0;
-    }
-
-    str->size = size;
-
-    return 1;
+    return str;
 }
 
 static int string_copy(string_t dest, string_t src, int size)
@@ -239,19 +146,6 @@ static int string_length(string_t str)
     return i;
 }
 
-static int dynstring_append(dynstring_t dest, string_t src)
-{
-    int size = dest->size - 1, len = string_length(src) + 1;
-
-    if(dynstring_resize(dest, size + len))
-    {
-        if(!string_copy(dest->data + size, src, len)) return 0;
-    }
-    else return 0;
-
-    return 1;
-}
-
 static string_t string_concat(string_t str, string_t cat)
 {
     int str_len = string_length(str), cat_len = string_length(cat) + 1;
@@ -262,6 +156,20 @@ static string_t string_concat(string_t str, string_t cat)
 
     string_copy(new_str, str, str_len);
     string_copy(new_str + str_len, cat, cat_len);
+
+    return new_str;
+}
+
+static string_t string_append(string_t dest, string_t src)
+{
+    if(dest == NULL || src == NULL) return NULL;
+
+    string_t new_str = string_concat(dest, src);
+
+    if(new_str == NULL) return NULL;
+
+    free(dest);
+    free(src);
 
     return new_str;
 }
