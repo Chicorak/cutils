@@ -25,18 +25,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-/**
- * Represents the test="test" in <tag test="test"> ... </test>
-*/
+/*---------------------------------------------------------------------------*/
+/*                              Data Structures                              */
+/*---------------------------------------------------------------------------*/
+
 struct xml_attr
 {
     char *name, *value;
 };
 
-/**
- * Represents a tag (and its subtags and sub values) in
- * <tag test="test"> Hello! <tag2> Goodbye! </tag2> </tag>
-*/
 struct xml_value
 {
     char *tag, *value;
@@ -46,21 +43,25 @@ struct xml_value
     struct xml_value **sub_values;
 };
 
-/**
- * Takes in a xml string, and returns
- * a xml tree.
-*/
-static struct xml_value *xml_parse(char *xml);
+/*---------------------------------------------------------------------------------*/
+/*                              Function Declarations                              */
+/*---------------------------------------------------------------------------------*/
 
 /**
- * A function to cleanup and free all memory used by
+ * Takes in a xml string and returns
+ * a xml tree.
+*/
+static struct xml_value *xml_parse(char *buffer);
+
+/**
+ * Cleans up and frees all memory used by
  * a xml tree.
 */
 static void xml_delete(struct xml_value *value);
 
-/*----------------------------------------------------------------------------*/
-/*                          Function Implementations                          */
-/*----------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------*/
+/*                              Function Implementations                              */
+/*------------------------------------------------------------------------------------*/
 
 enum parser_state
 {
@@ -71,7 +72,7 @@ enum parser_state
     PARSING_VALUE   /* 4 */
 };
 
-static struct xml_value *xml_parse(char *xml)
+static struct xml_value *xml_parse(char *buffer)
 {
     struct xml_value *container = (struct xml_value *)malloc(sizeof(struct xml_value));
 
@@ -96,9 +97,9 @@ static struct xml_value *xml_parse(char *xml)
     int state = IDLE;
 
     int i, j = 0;
-    for(i = 0; xml[i] != 0; i++)
+    for(i = 0; buffer[i] != 0; i++)
     {
-        char c = xml[i];
+        char c = buffer[i];
 
         switch(state)
         {
@@ -108,9 +109,9 @@ static struct xml_value *xml_parse(char *xml)
                 {
                     case '<':
                     {
-                        if(xml[i + 1] != 0)
+                        if(buffer[i + 1] != 0)
                         {
-                            if(xml[i + 1] == '/')
+                            if(buffer[i + 1] == '/')
                             {
                                 if(value_count > 1)
                                 {
@@ -246,9 +247,9 @@ static struct xml_value *xml_parse(char *xml)
 
                         storage[0] = 0;
 
-                        if(xml[i - 1] >= 0)
+                        if(buffer[i - 1] >= 0)
                         {
-                            if(xml[i - 1] == '/')
+                            if(buffer[i - 1] == '/')
                             {
                                 values = (struct xml_value **)realloc(values, sizeof(struct xml_value *) * (value_count - 1));
                                 value_count--;

@@ -188,7 +188,7 @@ static string_t string_substring(string_t str, int start, int end)
 
 static string_t string_slice(string_t str, int index)
 {
-
+    
 }
 
 #endif

@@ -1,4 +1,4 @@
 json.h:
-	description: A simple, lightweight, easy to use JSON parser and builder
+	description: a simple, lightweight, easy to use json parser
 	author: undersquire
 	version: 1.1.0

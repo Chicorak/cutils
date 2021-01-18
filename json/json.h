@@ -25,9 +25,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-/**
- * Json value types as enum.
- */
+/*---------------------------------------------------------------------------*/
+/*                              Data Structures                              */
+/*---------------------------------------------------------------------------*/
+
 enum json_value_type
 {
     JSON_TYPE_NOVALUE, /* 0 */
@@ -36,10 +37,6 @@ enum json_value_type
     JSON_TYPE_ARRAY    /* 3 */
 };
 
-/**
- * Represents a json value, which can be any
- * json type and store any type of value(s).
- */
 struct json_value
 {
     int type, value_count;
@@ -47,21 +44,25 @@ struct json_value
     struct json_value **values;
 };
 
-/**
- * Takes in a json string, and converts it into
- * a json tree.
- */
-static struct json_value *json_parse(char *json);
+/*---------------------------------------------------------------------------------*/
+/*                              Function Declarations                              */
+/*---------------------------------------------------------------------------------*/
 
 /**
- * A function to cleanup and free all memory used by
+ * Takes in a json string and returns
+ * a json tree.
+ */
+static struct json_value *json_parse(char *buffer);
+
+/**
+ * Cleans up and frees all memory used by
  * a json tree.
  */
 static void json_delete(struct json_value *value);
 
-/*----------------------------------------------------------------------------*/
-/*                          Function Implementations                          */
-/*----------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------*/
+/*                              Function Implementations                              */
+/*------------------------------------------------------------------------------------*/
 
 enum parser_state
 {
@@ -71,7 +72,7 @@ enum parser_state
     PARSING_STRING,  /* 3 */
 };
 
-static struct json_value *json_parse(char *json)
+static struct json_value *json_parse(char *buffer)
 {
     struct json_value *container = (struct json_value *)malloc(sizeof(struct json_value));
 
@@ -95,9 +96,9 @@ static struct json_value *json_parse(char *json)
     int state = IDLE;
 
     int i;
-    for(i = 0; json[i] != 0; i++)
+    for(i = 0; buffer[i] != 0; i++)
     {
-        char c = json[i];
+        char c = buffer[i];
 
         switch(state)
         {
@@ -148,14 +149,14 @@ static struct json_value *json_parse(char *json)
                     {
                         if(c == '\\')
                         {
-                            if(json[i + 1] == 'n')
+                            if(buffer[i + 1] == 'n')
                             {
                                 c = '\n';
                                 i++;
                             }
-                            else if(json[i + 1] == '\'' || json[i + 1] == '\"')
+                            else if(buffer[i + 1] == '\'' || buffer[i + 1] == '\"')
                             {
-                                c = json[i + 1];
+                                c = buffer[i + 1];
                                 i++;
                             }
                         }
@@ -319,14 +320,14 @@ static struct json_value *json_parse(char *json)
                     {
                         if(c == '\\')
                         {
-                            if(json[i + 1] == 'n')
+                            if(buffer[i + 1] == 'n')
                             {
                                 c = '\n';
                                 i++;
                             }
-                            else if(json[i + 1] == '\'' || json[i + 1] == '\"')
+                            else if(buffer[i + 1] == '\'' || buffer[i + 1] == '\"')
                             {
-                                c = json[i + 1];
+                                c = buffer[i + 1];
                                 i++;
                             }
                         }
