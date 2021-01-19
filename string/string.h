@@ -24,6 +24,17 @@
 
 #include <stdlib.h>
 
+#ifdef SHORTER_NAMES
+    #define sizstr resize_string
+    #define cpystr copy_string
+    #define cntstr count_string
+    #define catstr concat_strings
+    #define appstr append_string
+    #define slistr slice_string
+    #define splstr split_string
+    #define cmpstr compare_strings
+#endif
+
 typedef char * string_t;
 
 /**
@@ -36,61 +47,60 @@ static string_t string(string_t str);
  * Resizes the allocation of the specified
  * string to the specified size.
 */
-static string_t string_resize(string_t str, int size);
+static string_t resize_string(string_t str, int size);
 
 /**
  * Copies the contents of a string into another.
 */
-static int string_copy(string_t dest, string_t src, int size);
+static int copy_string(string_t dest, string_t src, int size);
 
 /**
- * Returns the length of the string.
+ * Returns the count of characters in a string.
 */
-static int string_length(string_t str);
-
+static int count_string(string_t str);
 
 /**
  * Returns a new string containing the two
  * specified strings concatenated.
 */
-static string_t string_concat(string_t str, string_t cat);
+static string_t concat_strings(string_t str, string_t cat);
 
 /**
  * Returns the first specified string with the
  * second specified string appended to it.
 */
-static string_t string_append(string_t dest, string_t src);
+static string_t append_string(string_t dest, string_t src);
 
 /**
  * Returns a new string taken from the specified string.
 */
-static string_t string_substring(string_t str, int start, int end);
+static string_t substring(string_t str, int start, int end);
 
 /**
  * Returns two strings from each side of the specified index.
 */
-static string_t *string_slice(string_t str, int index);
+static string_t *slice_string(string_t str, int index);
 
 /**
  * Returns a list of strings that were split from the
  * original string based on the specified format.
 */
-static string_t *string_split(string_t str, string_t format);
+static string_t *split_string(string_t str, string_t format);
 
 /**
  * Modifies the specified string to make all letters uppercase.
 */
-static void string_toupper(string_t str);
+static void toupper(string_t str);
 
 /**
  * Modifies the specified string to make all letters lowercase.
 */
-static void string_tolower(string_t str);
+static void tolower(string_t str);
 
 /**
  * Compares two strings and returns the number of different characters.
 */
-static int string_compare(string_t a, string_t b);
+static int compare_strings(string_t a, string_t b);
 
 /*----------------------------------------------------------------------------*/
 /*                          Function Implementations                          */
@@ -110,7 +120,7 @@ static string_t string(string_t str)
     return new_str;
 }
 
-static string_t string_resize(string_t str, int size)
+static string_t resize_string(string_t str, int size)
 {
     if(str == NULL || size <= 0) return NULL;
 
@@ -121,7 +131,7 @@ static string_t string_resize(string_t str, int size)
     return str;
 }
 
-static int string_copy(string_t dest, string_t src, int size)
+static int copy_string(string_t dest, string_t src, int size)
 {
     if(dest == NULL || src == NULL) return 0;
 
@@ -131,7 +141,7 @@ static int string_copy(string_t dest, string_t src, int size)
     return 1;
 }
 
-static int string_length(string_t str)
+static int count_string(string_t str)
 {
     if(str == NULL) return -1;
 
@@ -141,7 +151,7 @@ static int string_length(string_t str)
     return i;
 }
 
-static string_t string_concat(string_t str, string_t cat)
+static string_t concat_strings(string_t str, string_t cat)
 {
     int str_len = string_length(str), cat_len = string_length(cat) + 1;
 
@@ -155,7 +165,7 @@ static string_t string_concat(string_t str, string_t cat)
     return new_str;
 }
 
-static string_t string_append(string_t dest, string_t src)
+static string_t append_string(string_t dest, string_t src)
 {
     if(dest == NULL || src == NULL) return NULL;
 
@@ -169,7 +179,7 @@ static string_t string_append(string_t dest, string_t src)
     return new_str;
 }
 
-static string_t string_substring(string_t str, int start, int end)
+static string_t substring(string_t str, int start, int end)
 {
     string_t new_str = (string_t)malloc(sizeof(char) * (start + end + 1));
 
@@ -181,7 +191,7 @@ static string_t string_substring(string_t str, int start, int end)
     return new_str;
 }
 
-static string_t *string_slice(string_t str, int index)
+static string_t *slice_string(string_t str, int index)
 {
     int length = string_length(str);
     string_t *sliced = (string_t *)malloc(sizeof(string_t) * 2);
@@ -200,7 +210,7 @@ static string_t *string_slice(string_t str, int index)
     return sliced;
 }
 
-static string_t *string_split(string_t str, string_t format)
+static string_t *split_string(string_t str, string_t format)
 {
     int split_count = 0;
     string_t *split = (string_t *)malloc(sizeof(string_t));
@@ -208,7 +218,7 @@ static string_t *string_split(string_t str, string_t format)
 
 }
 
-static void string_toupper(string_t str)
+static void toupper(string_t str)
 {
     int i;
     for(i = 0; str[i] != 0; i++)
@@ -218,7 +228,7 @@ static void string_toupper(string_t str)
     }
 }
 
-static void string_tolower(string_t str)
+static void tolower(string_t str)
 {
     int i;
     for(i = 0; str[i] != 0; i++)
@@ -228,7 +238,7 @@ static void string_tolower(string_t str)
     }
 }
 
-static int string_compare(string_t a, string_t b)
+static int compare_strings(string_t a, string_t b)
 {
     int i, diff = string_length(a) - string_length(b);
 
