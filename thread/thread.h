@@ -114,7 +114,7 @@ static int unlock_mutex(mutex_t mutex)
 /*                            Unix Implementation                            */
 /*---------------------------------------------------------------------------*/
 
-#if defined(unix) || defined(__unix__) || defined(__unix)
+#if defined(unix) || defined(__unix__) || defined(__unix) || defined(__APPLE__)
 
 #include <pthread.h>
 
