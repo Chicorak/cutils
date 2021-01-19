@@ -60,7 +60,7 @@ static int lock_mutex(mutex_t mutex);
 /**
  * Unlocks a mutex.
 */
-static int unlock_mutex(void *mutex);
+static int unlock_mutex(mutex_t mutex);
 
 /*----------------------------------------------------------------------------*/
 /*                           Windows Implementation                           */
@@ -141,25 +141,28 @@ static void exit_thread(void *data)
 
 static mutex_t create_mutex(void)
 {
-    pthread_mutex_t mutex;
-    pthread_mutex_init(&mutex, NULL);
+    pthread_mutex_t *mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init(mutex, NULL);
 
     return (mutex_t)mutex;
 }
 
 static int destroy_mutex(mutex_t mutex)
 {
-    return pthread_mutex_destroy(&((pthread_mutex_t)mutex));
+    int result = pthread_mutex_destroy((pthread_mutex_t *)mutex);
+    free(mutex);
+
+    return result;
 }
 
-static int lock_mutex(mutex_t *mutex)
+static int lock_mutex(mutex_t mutex)
 {
-    return pthread_mutex_lock(&((pthread_mutex_t)mutex));
+    return pthread_mutex_lock((pthread_mutex_t *)mutex);
 }
 
-static int unlock_mutex(mutex_t *mutex)
+static int unlock_mutex(mutex_t mutex)
 {
-    return pthread_mutex_unlock(&((pthread_mutex_t)mutex));
+    return pthread_mutex_unlock((pthread_mutex_t *)mutex);
 }
 
 #endif
