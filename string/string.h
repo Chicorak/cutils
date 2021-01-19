@@ -69,7 +69,7 @@ static string_t string_substring(string_t str, int start, int end);
 /**
  * Returns two strings from each side of the specified index.
 */
-static string_t string_slice(string_t str, int index);
+static string_t *string_slice(string_t str, int index);
 
 /**
  * Returns a list of strings that were split from the
@@ -92,11 +92,6 @@ static void string_tolower(string_t str);
 */
 static int string_compare(string_t a, string_t b);
 
-/**
- * Cleans up and free all memory used by a regular string.
-*/
-static void string_free(string_t str);
-
 /*----------------------------------------------------------------------------*/
 /*                          Function Implementations                          */
 /*----------------------------------------------------------------------------*/
@@ -108,7 +103,7 @@ static string_t string(string_t str)
     int len = string_length(str) + 1;
     string_t new_str = (string_t)malloc(sizeof(char) * len);
 
-    if(new_str == NULL) return NULL;s
+    if(new_str == NULL) return NULL;
 
     string_copy(new_str, str, len);
 
@@ -119,7 +114,7 @@ static string_t string_resize(string_t str, int size)
 {
     if(str == NULL || size <= 0) return NULL;
 
-    str = (string_t)realloc(sizeof(char) * size);
+    str = (string_t)realloc(str, sizeof(char) * size);
 
     if(str == NULL) return NULL;
 
@@ -180,15 +175,72 @@ static string_t string_substring(string_t str, int start, int end)
 
     if(new_str == NULL) return NULL;
 
-    strcopy(new_str, str + start, start + end);
+    string_copy(new_str, str + start, start + end);
     new_str[start + end] = 0;
 
     return new_str;
 }
 
-static string_t string_slice(string_t str, int index)
+static string_t *string_slice(string_t str, int index)
 {
+    int length = string_length(str);
+    string_t *sliced = (string_t *)malloc(sizeof(string_t) * 2);
 
+    if(sliced == NULL) return NULL;
+
+    sliced[0] = (string_t)malloc(sizeof(char) * (index + 1));
+    sliced[1] = (string_t)malloc(sizeof(char) * (length - index + 1));
+
+    string_copy(sliced[0], str, index);
+    string_copy(sliced[1], str + index + 1, length - index);
+
+    sliced[0][index] = 0;
+    sliced[0][length - index] = 0;
+
+    return sliced;
+}
+
+static string_t *string_split(string_t str, string_t format)
+{
+    int split_count = 0;
+    string_t *split = (string_t *)malloc(sizeof(string_t));
+
+
+}
+
+static void string_toupper(string_t str)
+{
+    int i;
+    for(i = 0; str[i] != 0; i++)
+    {
+        if(str[i] >= 97 && str[i] <= 122)
+            str[i] -= 32;
+    }
+}
+
+static void string_tolower(string_t str)
+{
+    int i;
+    for(i = 0; str[i] != 0; i++)
+    {
+        if(str[i] >= 65 && str[i] <= 90)
+            str[i] += 32;
+    }
+}
+
+static int string_compare(string_t a, string_t b)
+{
+    int i, diff = string_length(a) - string_length(b);
+
+    if(diff < 0) diff *= -1;
+
+    for(i = 0; a[i] != 0; i++)
+    {
+        if(b[i] == 0) break;
+        if(a[i] != b[i]) diff++;
+    }
+
+    return diff;
 }
 
 #endif
