@@ -22,11 +22,7 @@
 #ifndef GUI_H
 #define GUI_H
 
-#if defined(__linux__)
-    #if !defined(WAYLAND) && !defined(X11)
-        #define X11
-    #endif
-#endif
+#include <stdlib.h>
 
 /*---------------------------------------------------------------------------*/
 /*                              Data Structures                              */
@@ -48,7 +44,7 @@ struct window_attr
 struct window_event
 {
     window_t window;
-    int type, params[16]; // max 16 params per event, can be changed
+    int type, params[16]; /* max 16 params per event, can be changed */
 };
 
 struct color
@@ -109,7 +105,7 @@ static int draw_pixel(window_t window, graphics_t graphics, int x, int y, struct
 /*                           Windows Implementation                           */
 /*----------------------------------------------------------------------------*/
 
-#if defined(_WIN32)
+#ifdef Windows
 
 #include <windows.h>
 
@@ -376,7 +372,7 @@ static int draw_pixel(window_t window, graphics_t graphics, int x, int y, struct
 /*                             UWP Implementation                             */
 /*----------------------------------------------------------------------------*/
 
-#if defined(_WIN32) && defined(UWP)
+#ifdef UWP
 
 
 
@@ -386,7 +382,7 @@ static int draw_pixel(window_t window, graphics_t graphics, int x, int y, struct
 /*                             X11 Implementation                             */
 /*----------------------------------------------------------------------------*/
 
-#if defined(__linux__) && defined(X11)
+#ifdef X11
 
 #include <stdlib.h>
 #include <X11/Xlib.h>
@@ -490,7 +486,7 @@ static void write_window(window_t window, struct window_attr *attr)
 /*                           Wayland Implementation                           */
 /*----------------------------------------------------------------------------*/
 
-#if defined(__linux__) && defined(WAYLAND)
+#ifdef Wayland
 
 
 
@@ -500,7 +496,7 @@ static void write_window(window_t window, struct window_attr *attr)
 /*                            Cocoa Implementation                            */
 /*----------------------------------------------------------------------------*/
 
-#if defined(__APPLE__)
+#ifdef Cocoa
 
 
 
@@ -510,7 +506,7 @@ static void write_window(window_t window, struct window_attr *attr)
 /*                           Android Implementation                           */
 /*----------------------------------------------------------------------------*/
 
-#if defined(__ANDROID__)
+#ifdef Android
 
 
 
