@@ -47,11 +47,6 @@ struct window_event
     int type, params[16]; /* max 16 params per event, can be changed */
 };
 
-struct color
-{
-    unsigned char r, g, b;
-};
-
 /*---------------------------------------------------------------------------------*/
 /*                              Function Declarations                              */
 /*---------------------------------------------------------------------------------*/
@@ -80,26 +75,6 @@ static int write_window(window_t window, struct window_attr *attr);
  * Poll an event from the event queue.
 */
 static int poll_event(struct window_event *event);
-
-/**
- * Create a graphics handle for a window for software rendering.
-*/
-static graphics_t create_graphics(window_t window);
-
-/**
- * Destroy a graphics handle and free any used memory.
-*/
-static int destroy_graphics(window_t window, graphics_t graphics);
-
-/**
- * Clear the window.
-*/
-static int clear_window(window_t window, graphics_t graphics);
-
-/**
- * Draw the specified colored pixel a the specified coordinates on the specified window.
-*/
-static int draw_pixel(window_t window, graphics_t graphics, int x, int y, struct color *color);
 
 /*----------------------------------------------------------------------------*/
 /*                           Windows Implementation                           */
@@ -338,32 +313,6 @@ static int poll_event(struct window_event *event)
         return 1;
     }
     else return 0;
-}
-
-static graphics_t create_graphics(window_t window)
-{
-    return (graphics_t)GetDC((HWND)window);
-}
-
-static int destroy_graphics(window_t window, graphics_t graphics)
-{
-    return DeleteDC((HDC)graphics);
-}
-
-static int clear_window(window_t window, graphics_t graphics)
-{
-    RECT rect;
-
-    if(GetWindowRect((HWND)window, &rect))
-    {
-        return RedrawWindow((HWND)window, &rect, NULL, RDW_ERASE);
-    }
-    else return 0;
-}
-
-static int draw_pixel(window_t window, graphics_t graphics, int x, int y, struct color *color)
-{
-    return SetPixel((HDC)graphics, x, y, RGB(color->r, color->g, color->b));
 }
 
 #endif
