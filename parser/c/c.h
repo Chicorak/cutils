@@ -180,6 +180,11 @@ static struct c_value *c_parse(char *buffer)
 
                 storage_count++;
 
+                if(strcmp(storage, "char") == 0)
+                {
+
+                }
+
                 break;
             }
         }

@@ -1,4 +1,4 @@
-/* memory.h - embedded implementation of libc's memory utilities
+/* memory.h - simple implementation of custom memory functions
  *
  * Copyright (c) 2021 Cleanware
  *
@@ -30,11 +30,19 @@
 	#define NULL (void *)0
 #endif
 
+/*---------------------------------------------------------------------------*/
+/*                              Data Structures                              */
+/*---------------------------------------------------------------------------*/
+
 struct block
 {
     int size, free;
     struct block *next;
 };
+
+/*---------------------------------------------------------------------------------*/
+/*                              Function Declarations                              */
+/*---------------------------------------------------------------------------------*/
 
 static void split(struct block *, int);
 static void merge(void);
@@ -47,8 +55,16 @@ static void *memmove(void *dest, void *src, int size);
 static int onheap(void *ptr);
 static int memuse(void);
 
+/*-------------------------------------------------------------------*/
+/*                              Globals                              */
+/*-------------------------------------------------------------------*/
+
 static unsigned char HEAP[HEAP_SIZE];
-static struct block *FREE_BLOCKS = (void *)HEAP;
+static struct block *FREE_BLOCKS = (struct block *)HEAP;
+
+/*------------------------------------------------------------------------------------*/
+/*                              Function Implementations                              */
+/*------------------------------------------------------------------------------------*/
 
 static void split(struct block *block, int size)
 {

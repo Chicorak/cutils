@@ -88,7 +88,10 @@ static thread_t create_thread(void *(*func)(void *), void *arg)
 
 static void *join_thread(thread_t thread)
 {
-    return (void *)WaitForSingleObject((HANDLE)thread, INFINITE);
+    void *data = (void *)WaitForSingleObject((HANDLE)thread, INFINITE);
+    CloseHandle((HANDLE)thread);
+
+    return data;
 }
 
 static void exit_thread(void *data)
