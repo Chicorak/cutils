@@ -22,11 +22,7 @@
 #ifndef GUI_H
 #define GUI_H
 
-#if defined(__linux__)
-    #if !defined(WAYLAND) && !defined(X11)
-        #define X11
-    #endif
-#endif
+#include <stdlib.h>
 
 /*---------------------------------------------------------------------------*/
 /*                              Data Structures                              */
@@ -48,12 +44,7 @@ struct window_attr
 struct window_event
 {
     window_t window;
-    int type, params[16]; // max 16 params per event, can be changed
-};
-
-struct color
-{
-    unsigned char r, g, b;
+    int type, params[16]; /* max 16 params per event, can be changed */
 };
 
 /*---------------------------------------------------------------------------------*/
@@ -85,31 +76,11 @@ static int write_window(window_t window, struct window_attr *attr);
 */
 static int poll_event(struct window_event *event);
 
-/**
- * Create a graphics handle for a window for software rendering.
-*/
-static graphics_t create_graphics(window_t window);
-
-/**
- * Destroy a graphics handle and free any used memory.
-*/
-static int destroy_graphics(window_t window, graphics_t graphics);
-
-/**
- * Clear the window.
-*/
-static int clear_window(window_t window, graphics_t graphics);
-
-/**
- * Draw the specified colored pixel a the specified coordinates on the specified window.
-*/
-static int draw_pixel(window_t window, graphics_t graphics, int x, int y, struct color *color);
-
 /*----------------------------------------------------------------------------*/
 /*                           Windows Implementation                           */
 /*----------------------------------------------------------------------------*/
 
-#if defined(_WIN32)
+#ifdef Windows
 
 #include <windows.h>
 
@@ -344,39 +315,13 @@ static int poll_event(struct window_event *event)
     else return 0;
 }
 
-static graphics_t create_graphics(window_t window)
-{
-    return (graphics_t)GetDC((HWND)window);
-}
-
-static int destroy_graphics(window_t window, graphics_t graphics)
-{
-    return DeleteDC((HDC)graphics);
-}
-
-static int clear_window(window_t window, graphics_t graphics)
-{
-    RECT rect;
-
-    if(GetWindowRect((HWND)window, &rect))
-    {
-        return RedrawWindow((HWND)window, &rect, NULL, RDW_ERASE);
-    }
-    else return 0;
-}
-
-static int draw_pixel(window_t window, graphics_t graphics, int x, int y, struct color *color)
-{
-    return SetPixel((HDC)graphics, x, y, RGB(color->r, color->g, color->b));
-}
-
 #endif
 
 /*----------------------------------------------------------------------------*/
 /*                             UWP Implementation                             */
 /*----------------------------------------------------------------------------*/
 
-#if defined(_WIN32) && defined(UWP)
+#ifdef UWP
 
 
 
@@ -386,7 +331,7 @@ static int draw_pixel(window_t window, graphics_t graphics, int x, int y, struct
 /*                             X11 Implementation                             */
 /*----------------------------------------------------------------------------*/
 
-#if defined(__linux__) && defined(X11)
+#ifdef X11
 
 #include <stdlib.h>
 #include <X11/Xlib.h>
@@ -490,7 +435,7 @@ static void write_window(window_t window, struct window_attr *attr)
 /*                           Wayland Implementation                           */
 /*----------------------------------------------------------------------------*/
 
-#if defined(__linux__) && defined(WAYLAND)
+#ifdef Wayland
 
 
 
@@ -500,7 +445,7 @@ static void write_window(window_t window, struct window_attr *attr)
 /*                            Cocoa Implementation                            */
 /*----------------------------------------------------------------------------*/
 
-#if defined(__APPLE__)
+#ifdef Cocoa
 
 
 
@@ -510,7 +455,7 @@ static void write_window(window_t window, struct window_attr *attr)
 /*                           Android Implementation                           */
 /*----------------------------------------------------------------------------*/
 
-#if defined(__ANDROID__)
+#ifdef Android
 
 
 
