@@ -22,8 +22,8 @@ Include any header file you want to use. Make sure to compile any corresponding 
 
 ## Credits
 
-Thanks to everyone in the Cleanware organization, and everyone who contributed.
+Thanks to everyone in the Fossbay organization, and everyone who contributed.
 
 ## License
 
-[zlib](https://github.com/Cleanware/cutils/blob/main/LICENSE)
+[zlib](https://github.com/Fossbay/cutils/blob/main/LICENSE)
